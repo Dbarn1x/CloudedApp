@@ -1,11 +1,15 @@
 package com.ejemplo.clouded.ui.screen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Card
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,78 +25,88 @@ import com.ejemplo.clouded.R
 
 @Composable
 fun CategoriaScreen(nombreUsuario: String, onCategoriaClick: (String) -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        // 🔹 Fondo de pantalla
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.fondonegro),
-            contentDescription = "Fondo",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
-
-        // 🔹 Contenido principal
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 80.dp)
+                .background(Color(0x99000000))
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "Bienvenido $nombreUsuario",
                 color = Color.White,
-                fontSize = 24.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
-
             Text(
                 text = "Indícanos lo que buscas",
                 color = Color.White,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(bottom = 32.dp)
+                fontSize = 16.sp
             )
-
-            // 🔸 Botones de categorías
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+            Spacer(modifier = Modifier.height(25.dp))
+            val categorias = listOf(
+                "Calzado",
+                "Música",
+                "Ropa",
+                "Accesorios",
+                "Tecnología",
+                "Hogar"
+            )
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                    CategoriaBoton("Calzado") { onCategoriaClick("calzado") }
-                    CategoriaBoton("Música") { onCategoriaClick("musica") }
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                    CategoriaBoton("Ropa") { onCategoriaClick("ropa") }
-                    CategoriaBoton("Accesorios") { onCategoriaClick("accesorios") }
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                    CategoriaBoton("Tecnología") { onCategoriaClick("tecnologia") }
-                    CategoriaBoton("Hogar") { onCategoriaClick("hogar") }
+                items(categorias.size) { index ->
+                    val categoria = categorias[index]
+                    val isLeft = index % 2 == 0
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        horizontalArrangement = if (isLeft) Arrangement.Start else Arrangement.End
+                    ) {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn() + slideInHorizontally(
+                                initialOffsetX = { if (isLeft) -200 else 200 }
+                            )
+                        ) {
+                            Card(
+                                modifier = Modifier
+                                    .width(160.dp)
+                                    .height(55.dp)
+                                    .clickable { onCategoriaClick(categoria) }
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = categoria,
+                                        fontWeight = FontWeight.Bold,
+                                        fontStyle = FontStyle.Italic,
+                                        color = Color.Black,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun CategoriaBoton(titulo: String, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .width(150.dp)
-            .height(60.dp)
-            .background(Color.White, shape = RoundedCornerShape(10.dp))
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = titulo,
-            fontStyle = FontStyle.Italic,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            textAlign = TextAlign.Center,
-            fontSize = 18.sp
-        )
-    }
-}
+

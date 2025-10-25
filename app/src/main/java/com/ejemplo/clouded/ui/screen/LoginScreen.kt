@@ -31,13 +31,11 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit, onRegisterClick: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0x99000000))
         )
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -47,7 +45,6 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit, onRegisterClick: () -> Unit) {
         ) {
             Text("Iniciar Sesión", color = Color.White, fontSize = 24.sp)
             Spacer(modifier = Modifier.height(20.dp))
-
             OutlinedTextField(
                 value = usuario,
                 onValueChange = { usuario = it },
@@ -62,9 +59,7 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit, onRegisterClick: () -> Unit) {
                     unfocusedBorderColor = Color.Gray
                 )
             )
-
             Spacer(modifier = Modifier.height(10.dp))
-
             OutlinedTextField(
                 value = contrasena,
                 onValueChange = { contrasena = it },
@@ -81,11 +76,8 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit, onRegisterClick: () -> Unit) {
                     unfocusedBorderColor = Color.Gray
                 )
             )
-
             Spacer(modifier = Modifier.height(20.dp))
-
             val camposValidos = usuario.isNotBlank() && contrasena.isNotBlank()
-
             Button(
                 onClick = { onLoginSuccess(usuario) },
                 enabled = camposValidos,
@@ -96,9 +88,7 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit, onRegisterClick: () -> Unit) {
             ) {
                 Text("Ingresar")
             }
-
             Spacer(modifier = Modifier.height(15.dp))
-
             Row(horizontalArrangement = Arrangement.Center) {
                 Text("¿No tienes cuenta? ", color = Color.White)
                 Text(
@@ -111,3 +101,4 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit, onRegisterClick: () -> Unit) {
         }
     }
 }
+
