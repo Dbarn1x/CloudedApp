@@ -12,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,18 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ejemplo.clouded.R
+import com.ejemplo.clouded.ui.theme.CloudedColors
 
-data class Producto(
-    val nombre: String,
-    val precio: String,
-    val imagen: Int
-)
+data class Producto(val nombre: String, val precio: String, val imagen: Int)
 
 @Composable
-fun CatalogScreen(
-    categoria: String,
-    navController: NavController
-) {
+fun CatalogoScreen(categoria: String, navController: NavController) {
     val productos = when (categoria.lowercase()) {
         "calzado" -> listOf(
             Producto("Air Jordan 4 (Fire Red)", "$220 USD", R.drawable.jordan4firered),
@@ -46,86 +39,30 @@ fun CatalogScreen(
         "música" -> listOf(
             Producto("Stratocaster Negra", "$500 USD", R.drawable.guitarra1),
             Producto("Epiphone Les Paul Junior", "$450 USD", R.drawable.guitarra2),
-            Producto("PRS SE Custom 24", "$850 USD", R.drawable.guitarra3),
-            Producto("Marcus Miller Bass", "$720 USD", R.drawable.guitarra4)
-        )
-        "tecnología" -> listOf(
-            Producto("Laptop ASUS TUF Gaming", "$1100 USD", R.drawable.tecnologia1),
-            Producto("Gabinete Snake RGB", "$180 USD", R.drawable.tecnologia2),
-            Producto("Mouse Logitech RGB", "$60 USD", R.drawable.tecnologia3),
-            Producto("Teclado Mecánico RGB", "$90 USD", R.drawable.tecnologia4)
-        )
-        "hogar" -> listOf(
-            Producto("Set de cuchillos acero inoxidable", "$75 USD", R.drawable.hogar1),
-            Producto("Juego de platos blancos", "$40 USD", R.drawable.hogar2),
-            Producto("Vasos de vidrio (x6)", "$25 USD", R.drawable.hogar3)
-        )
-        "accesorios" -> listOf(
-            Producto("Bufanda verde cuadros", "$25 USD", R.drawable.accesorios),
-            Producto("Reloj Rip Curl OceanTech", "$120 USD", R.drawable.accesorio3)
+            Producto("PRS SE Custom 24", "$850 USD", R.drawable.guitarra3)
         )
         else -> emptyList()
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.fondonegro),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0x99000000))
-        )
-
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // 🔙 Botón Volver
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = { navController.popBackStack() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-                ) {
-                    Text("Volver", color = Color.Black)
-                }
-            }
-
-            Text(
-                text = categoria,
-                color = Color.White,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(8.dp)
-            )
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(productos) { producto ->
+        Box(Modifier.fillMaxSize().background(CloudedColors.FondoTransparente))
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(Modifier.height(10.dp))
+            Button(onClick = { navController.popBackStack() }) { Text("← Volver") }
+            Text(categoria, color = CloudedColors.BlancoTexto, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            LazyColumn(contentPadding = PaddingValues(12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                items(productos) { p ->
                     AnimatedVisibility(visible = true, enter = fadeIn()) {
-                        ProductoCard(
-                            producto = producto,
-                            onClick = {
-                                // 🧭 Navega al detalle del producto
-                                val precioLimpio = producto.precio.replace("$", "").replace("USD", "").trim()
-                                navController.navigate(
-                                    "detalle/${producto.nombre}/${precioLimpio}/${producto.imagen}"
-                                )
-                            }
-                        )
+                        ProductoCard(p) {
+                            val precioLimpio = p.precio.replace("$", "").replace("USD", "").trim()
+                            navController.navigate("detalle/${p.nombre}/${precioLimpio}/${p.imagen}")
+                        }
                     }
                 }
             }
@@ -134,28 +71,17 @@ fun CatalogScreen(
 }
 
 @Composable
-fun ProductoCard(producto: Producto, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(10.dp)
-        ) {
+fun ProductoCard(p: Producto, onClick: () -> Unit) {
+    Card(modifier = Modifier.fillMaxWidth().clickable { onClick() }, elevation = CardDefaults.cardElevation(6.dp)) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(10.dp)) {
             Image(
-                painter = painterResource(id = producto.imagen),
-                contentDescription = producto.nombre,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
+                painter = painterResource(id = p.imagen),
+                contentDescription = p.nombre,
+                modifier = Modifier.fillMaxWidth().height(200.dp),
                 contentScale = ContentScale.Crop
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(producto.nombre, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text(producto.precio, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            Text(p.nombre, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Text(p.precio, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
         }
     }
 }
